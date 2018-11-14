@@ -1,0 +1,23 @@
+{
+	"name": "Matrix Question Randomization",
+	"namespace": "Vanderbilt\\MatrixQuestionRandomization",
+	"authors": [
+		{
+			"name": "Mark McEver",
+			"email": "datacore@vanderbilt.edu",
+			"institution": "Vanderbilt University Medical Center"
+		}
+	],
+	"description": "Randomizes the order of the questions for specified matrices on survey pages.",
+	"permissions": [
+		"redcap_survey_page"
+	],
+	"project-settings": [
+		{
+			"key": "matrix-group-names",
+			"name": "Matrix Group Name",
+			"type": "text",
+			"repeatable": true
+		}
+	]
+}

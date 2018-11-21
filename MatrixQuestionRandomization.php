@@ -9,6 +9,14 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 			return;
 		}
 
+		?>
+		<style>
+			tr.matrix-randomization-module-highligted-row td{
+				background: #ffe6e6;
+			}
+		</style>
+		<?php
+
 		foreach($groupNames as $groupName){
 			?>
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js" integrity="sha256-9Nt2r+tJnSd2A2CRUvnjgsD+ES1ExvjbjBNqidm9doI=" crossorigin="anonymous"></script>
@@ -62,10 +70,21 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 							numbers.push($(element).html())
 						})
 
+						var wasRequiredFieldsMessageDisplayed = $('#reqPopup').length !== 0
 						$(currentMatrixOrder).each(function (index, sortedIndex) {
 							var row = $(questions[sortedIndex])
 							row.find('td.questionnummatrix').html(numbers.pop())
 							row.insertAfter(header)
+
+							if( wasRequiredFieldsMessageDisplayed &&
+								row.find('.requiredlabelmatrix').length !== 0 &&
+								row.find('input:checked').length === 0
+							){
+								// The required fields dialog was displayed.
+								// This field must be one of the reasons since it is required and unanswered.
+								// Highlight this row.
+								row.addClass('matrix-randomization-module-highligted-row')
+							}
 						})
 
 						matrixTables.css('visibility', 'visible')

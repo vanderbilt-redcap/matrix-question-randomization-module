@@ -11,6 +11,7 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 
 		foreach($groupNames as $groupName){
 			?>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js" integrity="sha256-9Nt2r+tJnSd2A2CRUvnjgsD+ES1ExvjbjBNqidm9doI=" crossorigin="anonymous"></script>
 			<script>
 				(function(){
 					var header = $('#<?=$groupName?>-mtxhdr-tr')
@@ -18,30 +19,56 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 
 					// Hide the labels until we're done re-ordering them
 					// (so the user doesn't see the previous order for a split second).
-					var labels = questions.find('label:visible')
-					labels.css('visibility', 'hidden')
+					var matrixTables = questions.find('table:visible')
+					matrixTables.css('visibility', 'hidden')
 
 					// The following must be added to the loop to execute after other pending tasks
 					// to ensure it gets called after question numbers are initially set.
 					// The questions are numbered incorrectly if we sort them beforehand.
 					$(function(){
+						var cookieName = 'matrix-question-randomization-module'
+						if(<?=json_encode($_SERVER['REQUEST_METHOD'] === 'GET')?>){
+							// Clear the randomization order when a new survey is loaded
+							Cookies.remove(cookieName)
+						}
+
+						var randomizationCache = Cookies.getJSON(cookieName)
+						if(!randomizationCache){
+							randomizationCache = {}
+						}
+
+						var groupName = '' + <?=json_encode($groupName)?>;
+						var currentMatrixOrder = randomizationCache[groupName]
+						if(!currentMatrixOrder){
+							currentMatrixOrder = []
+
+							questions.each(function (index, element) {
+								currentMatrixOrder.push(index)
+							})
+
+							currentMatrixOrder.sort(function () {
+								// This effectively randomizes the order by returning a
+								// random number between -0.5 and 0.5.
+								return 0.5 - Math.random()
+							})
+
+							randomizationCache[groupName] = currentMatrixOrder
+							Cookies.set(cookieName, randomizationCache, { expires: 1 })
+						}
+
 						var numbers = []
 						questions.find('td.questionnummatrix').each(function(index, element){
 							// Store the existing numbers in order.
 							numbers.push($(element).html())
 						})
 
-						questions.sort(function () {
-							// This effectively randomizes the order by returning a
-							// random number between -0.5 and 0.5.
-							return 0.5 - Math.random()
-						}).each(function (index, element) {
-							element = $(element)
-							element.find('td.questionnummatrix').html(numbers.pop())
-							element.insertAfter(header)
+						$(currentMatrixOrder).each(function (index, sortedIndex) {
+							var row = $(questions[sortedIndex])
+							row.find('td.questionnummatrix').html(numbers.pop())
+							row.insertAfter(header)
 						})
 
-						labels.css('visibility', 'visible')
+						matrixTables.css('visibility', 'visible')
 					})
 				})()
 			</script>

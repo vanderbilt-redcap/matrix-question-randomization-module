@@ -11,8 +11,8 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 
 		?>
 		<style>
-			tr.matrix-randomization-module-highligted-row td{
-				background: #ffe6e6;
+			#questiontable tr.matrix-randomization-module-highligted-row td{
+				background-color: #ffe6e6;
 			}
 		</style>
 		<?php

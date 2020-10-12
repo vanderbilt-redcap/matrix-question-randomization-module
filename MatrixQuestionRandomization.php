@@ -22,6 +22,26 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js" integrity="sha256-9Nt2r+tJnSd2A2CRUvnjgsD+ES1ExvjbjBNqidm9doI=" crossorigin="anonymous"></script>
 			<script>
 				(function(){
+					// Copied from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array/2450976
+					var shuffle = function(array) {
+						var currentIndex = array.length, temporaryValue, randomIndex;
+
+						// While there remain elements to shuffle...
+						while (0 !== currentIndex) {
+
+							// Pick a remaining element...
+							randomIndex = Math.floor(Math.random() * currentIndex);
+							currentIndex -= 1;
+
+							// And swap it with the current element.
+							temporaryValue = array[currentIndex];
+							array[currentIndex] = array[randomIndex];
+							array[randomIndex] = temporaryValue;
+						}
+
+						return array;
+					}
+
 					var header = $('#<?=$groupName?>-mtxhdr-tr')
 					var questions = header.nextUntil(':not(tr[mtxgrp="<?=$groupName?>"])')
 
@@ -54,11 +74,7 @@ class MatrixQuestionRandomization extends \ExternalModules\AbstractExternalModul
 								currentMatrixOrder.push(index)
 							})
 
-							currentMatrixOrder.sort(function () {
-								// This effectively randomizes the order by returning a
-								// random number between -0.5 and 0.5.
-								return 0.5 - Math.random()
-							})
+							shuffle(currentMatrixOrder)
 
 							randomizationCache[groupName] = currentMatrixOrder
 							Cookies.set(cookieName, randomizationCache, { expires: 1 })
